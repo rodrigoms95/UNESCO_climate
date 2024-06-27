@@ -20,7 +20,7 @@
 19,UNESCO UIS,population,SDG,SDG Global and Thematic Indicators,True,ROFST.H.1.Q1,"Out-of-school rate for children of primary school age, poorest quintile, both sexes (household survey data) (%)",,,,,,,,,,,,,,,,,
 20,UNESCO UIS,population,SDG,SDG Global and Thematic Indicators,True,ROFST.H.1.RUR,"Out-of-school rate for children of primary school age, rural, both sexes (household survey data) (%)",,,,,,,,,,,,,,,,,
 21,UNESCO UIS,population,SDG,SDG Global and Thematic Indicators,False,XGDP.FSGOV,Government expenditure on education as a percentage of GDP (%),SDG 4.F.1,% of GDP,,,,,,,,,,,,,,,
-22,OECD,population,DF_GREEN_GROWTH,Green Growth,True,POP_NETMIGR,Net migration,,Persons,,,,,,,,,,,,,,,
+22,OECD,population,DF_GREEN_GROWTH,Green Growth,True,POP_NETMIGR,Net migration,used as its absolute value,Persons,,,,,,,,,,,,,,,
 23,Global Data Lab,population,Subnational_HDI,Subnational HDI,False,Subnational HDI,Human Development Index,,index,,,,,,,,,,,,,,,
 24,Global Data Lab,population,Subnational_HDI,Subnational GDI,False,Subnational GDI,Gender Ddevelopment Index,,index,,,,,,,,,,,,,,,
 25,World Bank,population,SI.POV.GINI,Gini Index,True,Gini index,Gini Coefficient,,index,,,,,,,,,,,,,,,
