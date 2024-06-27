@@ -1,3 +1,11 @@
+#Ignorar
+*.code-workspace
+#data/
+results/
+temp/
+.DS_Store
+/code/dask-worker-space
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
