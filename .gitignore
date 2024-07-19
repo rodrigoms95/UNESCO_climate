@@ -2,6 +2,8 @@
 *.code-workspace
 #data/
 results/
+graphs/
+data/
 temp/
 .DS_Store
 /code/dask-worker-space
