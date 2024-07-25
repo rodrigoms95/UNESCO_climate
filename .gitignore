@@ -5,6 +5,7 @@ results/
 graphs/
 data/
 temp/
+share/
 .DS_Store
 /code/dask-worker-space
 
