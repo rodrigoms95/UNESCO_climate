@@ -14,16 +14,11 @@ ix  = "ISO_A3"
 file_path = "results/hotspots_1km/" 
 data_path = "Bases_de_datos/Worldpop/"
 
-#s_f = ["2040_2059_SSP245"]
-#g_f = ["f"]
-#g_n = ["Female"]
-#a_f = [5]
-#a_n = [ "5-10 years"]
-s_f = ["1995_2014"]
-g_f = ["m"]
-g_n = ["Male"]
-a_f = [80]
-a_n = [ "more than 80 years"]
+s_f = ["2040_2059_SSP245"]
+g_f = ["f"]
+g_n = ["Female"]
+a_f = [5]
+a_n = [ "5-10 years"]
 #s_f = ["1995_2014", "2040_2059_SSP245"]
 #g_f = ["f", "m"]
 #g_n = ["Female", "Male"]
@@ -74,7 +69,7 @@ var_ci   = [
 var_tot  = "Extreme climate"
 
 # Archivos de zonas afectadas
-files = [ "pre", "temp", "drought", "hurr",
+files_n = [ "pre", "temp", "drought", "hurr",
           "temp_pre", "pre_drought", "pre_hurr",
           "temp_drought", "temp_hurr", "hurr_drought",
           "temp_pre_drought", "temp_pre_hurr",
@@ -89,7 +84,7 @@ name_path = f"{data_path}{names}/"
 for s in range(len(s_f)):
 
   # Nombres de archivos de zonas afectadas
-  files = [ f"{x}_{s_f[s]}.tif" for x in files ]
+  files = [ f"{x}_{s_f[s]}.tif" for x in files_n ]
 
   # Iteramos por género
   for g in range(len(g_f)):

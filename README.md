@@ -39,8 +39,10 @@ socioeconómica ante riesgos de transición
     - Crea los archivo *"share/Index/age_sex_structures_1995_2014.csv"* y *"share/Index/age_sex_structures_2040_2059_SSP245.csv"*
     - Requiere haber creado los archivos de la carpeta *"results/hotspots_1km/"* en QGIS a partir de *"results/hotspots/"*, que a su vez son producto de correr *"indice_clima.ipynb"*
 
-- **immpact_women.ipynb**:Visualización de la la exposición al cambio climático para grupos demográficos femeninos
+- **map_women.ipynb**:Visualización de la la exposición al cambio climático para grupos demográficos femeninos
 
+- **migration.ipynb**: Calcula la exposición al cambio climático de los migrantes
+    - Requiere correr antes*"indice_clima.ipynb"*, e *"indice_socio.ipynb"*
 ### Secundarios y no utilizados
 - **sea_level.ipynb**: Crea una tabla y un NetCDF de cambios en el nivel del mar con los datos de la NASA
     - Crea el archivo "share/Climate/sea_level_change.csv" y "results/sea_level_change_ssp245_2050.nc"
