@@ -14,18 +14,18 @@ ix  = "ISO_A3"
 file_path = "results/hotspots_1km/" 
 data_path = "Bases_de_datos/Worldpop/"
 
+d_f = ["results/"]
+d_n = ["diss_me"]
 s_f = ["2040_2059_SSP245"]
-g_f = ["f"]
-g_n = ["Female"]
-a_f = [5]
-a_n = [ "5-10 years"]
+#a_f = ["share/Indexes/", "results/"]
+#a_n = ["ISO_N3", "diss_me"]
 #s_f = ["1995_2014", "2040_2059_SSP245"]
-#g_f = ["f", "m"]
-#g_n = ["Female", "Male"]
-#a_f = [0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
-#a_n = ( ["0-12 months"] + [f"{x} years" for x in [ "1-5",  "5-10", "10-15",
-#  "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55",
-#  "55-60", "60-65", "65-70", "70-75", "75-80", "more than 80" ] ] )
+g_f = ["f", "m"]
+g_n = ["Female", "Male"]
+a_f = [0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
+a_n = ( ["0-12 months"] + [f"{x} years" for x in [ "1-5",  "5-10", "10-15",
+  "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55",
+  "55-60", "60-65", "65-70", "70-75", "75-80", "more than 80" ] ] )
 
 # Variables de población afectada
 vars = [ "Only extreme rainfall", "Only extreme heat",
@@ -80,163 +80,180 @@ files_n = [ "pre", "temp", "drought", "hurr",
 names     = "age_sex_structures"
 name_path = f"{data_path}{names}/"
 
-# Iteramos para cada escenario
-for s in range(len(s_f)):
+# Iteramos para países y estados
+for d in range(len(d_f)):
+  # Iteramos para cada escenario
+  for s in range(len(s_f)):
 
-  # Nombres de archivos de zonas afectadas
-  files = [ f"{x}_{s_f[s]}.tif" for x in files_n ]
+    # Nombres de archivos de zonas afectadas
+    files = [ f"{x}_{s_f[s]}.tif" for x in files_n ]
 
-  # Iteramos por género
-  for g in range(len(g_f)):
-    # Iteramos para cada edad
-    for a in range(len(a_f)):
+    # Iteramos por género
+    for g in range(len(g_f)):
+      # Iteramos para cada edad
+      for a in range(len(a_f)):
 
-      # Archivo de población
-      file_g = f"global_{g_f[g]}_{a_f[a]}_2020_1km.tif"
-      path_g = f"../{name_path}{file_g}"
+        # Archivo de población
+        file_g = f"global_{g_f[g]}_{a_f[a]}_2020_1km.tif"
+        path_g = f"../{name_path}{file_g}"
 
-      # Archivo de países
-      path_c = f"../{data_path}global_level0_1km_2000_2020.tif"
+        # Archivo de países
+        path_c = f"../{data_path}global_level{d}_1km_2000_2020.tif"
 
-      # Solo corremos si existe el archivo de población.
-      if os.path.exists(f"/Volumes/DATA/UNESCO/{name_path}{file_g}"):
+        # Solo corremos si existe el archivo de población.
+        if os.path.exists(f"/Volumes/DATA/UNESCO/{name_path}{file_g}"):
 
-        # Nombres de columnas y variables
-        var_n   = f"{g_n[g]} population, {a_n[a]} old"
-        name_n  = f" affected {var_n.lower()}"
-        file_n  = f"{names}_{s_f[s]}.csv"
-        print(f"Processing {var_n}")
-        name_p  = [ f"{v}{name_n}" for v in vars       ]
-        name_pp = [ f"% {v}{name_n}" for v in vars     ]
-        name_c  = [ f"{v}{name_n}" for v in var_clim   ]
-        name_cp = [ f"% {v}{name_n}" for v in var_clim ]
-        name_t  =   f"{var_tot}{name_n}"
-        name_tp =   f"% {var_tot}{name_n}"
-        name_ci = []
-        for x in var_ci:
-          name_ci.append( [ f"{v}{name_n}" for v in x ] )
+          # Nombres de columnas y variables
+          var_n   = f"{g_n[g]} population, {a_n[a]} old"
+          name_n  = f" affected {var_n.lower()}"
+          if d: file_n  = f"{names}_{s_f[s]}_admin_1.csv"
+          else: file_n  = f"{names}_{s_f[s]}.csv"
+          print(f"Processing {var_n}")
+          name_p  = [ f"{v}{name_n}" for v in vars       ]
+          name_pp = [ f"% {v}{name_n}" for v in vars     ]
+          name_c  = [ f"{v}{name_n}" for v in var_clim   ]
+          name_cp = [ f"% {v}{name_n}" for v in var_clim ]
+          name_t  =   f"{var_tot}{name_n}"
+          name_tp =   f"% {var_tot}{name_n}"
+          name_ci = []
+          for x in var_ci:
+            name_ci.append( [ f"{v}{name_n}" for v in x ] )
 
-        # Creamos la columna de datos si no existe
-        if not os.path.exists( f"share/Indexes/{file_n}" ):
-          # Tabla base
-          iso = "../Bases_de_datos/Country_ISO_code.csv"
-          df_iso = pd.read_csv(iso).set_index("alpha-3")
-          df_iso.index.name = ix
-          df_iso = df_iso.rename(columns = {"country-code": "ISO_N3"})
-          df_iso[var_n] = np.nan
-          df_iso[name_p] = np.nan
-          df_iso[name_pp] = None
-          df_iso[["name", "ISO_N3", "region", "sub-region", "OECD", "EU27",
-            "BRICS+", "BRICS", "LDC", "SIDS", "LLDC"] + name_p + name_pp
-            ].to_csv( f"share/Indexes/{file_n}" )
-        else:
-          df_iso = pd.read_csv( f"share/Indexes/{file_n}",
-            index_col = "ISO_N3" )
-        if not var_n in df_iso.columns:
-          df_iso[var_n] = np.nan
-          df_iso[name_p] = np.nan
-          df_iso[name_pp] = None
+          # Creamos la columna de datos si no existe
+          if d:
+            if not os.path.exists( f"{d_f[d]}{file_n}" ):
+              # Tabla base
+              df_iso = pd.DataFrame(index = np.arange(1, 20013))
+              df_iso.index.name = a_n[a]
+            else:
+              df_iso = pd.read_csv( f"{d_f[d]}{file_n}",
+                index_col = "ISO_N3" )
+            if not var_n in df_iso.columns:
+              df_iso[var_n] = np.nan
+              df_iso[name_p] = np.nan
+              df_iso[name_pp] = None
+          else:
+            if not os.path.exists( f"{d_f[d]}{file_n}" ):
+              # Tabla base
+              iso = "../Bases_de_datos/Country_ISO_code.csv"
+              df_iso = pd.read_csv(iso).set_index("alpha-3")
+              df_iso.index.name = ix
+              df_iso = df_iso.rename(columns = {"country-code": "ISO_N3"})
+              df_iso[var_n] = np.nan
+              df_iso[name_p] = np.nan
+              df_iso[name_pp] = None
+              df_iso[["name", "ISO_N3", "region", "sub-region", "OECD", "EU27",
+                "BRICS+", "BRICS", "LDC", "SIDS", "LLDC"] + name_p + name_pp
+                ].to_csv( f"{d_f[d]}{file_n}" )
+            else:
+              df_iso = pd.read_csv( f"{d_f[d]}{file_n}",
+                index_col = "ISO_N3" )
+            if not var_n in df_iso.columns:
+              df_iso[var_n] = np.nan
+              df_iso[name_p] = np.nan
+              df_iso[name_pp] = None
 
-        # Copiamos el archivo de población a disco
-        if not os.path.exists(path_g):
-          print("Copying file...")
-          shutil.copy2( f"/Volumes/DATA/UNESCO/{name_path}{file_g}", path_g )
+          # Copiamos el archivo de población a disco
+          if not os.path.exists(path_g):
+            print("Copying file...")
+            shutil.copy2( f"/Volumes/DATA/UNESCO/{name_path}{file_g}", path_g )
 
-        # Abrimos el archivo de países
-        with xr.open_dataset(path_c) as countries:
-          countries = countries.isel(band = 0).drop_vars(
-            ["band", "spatial_ref"] ).rename_dims(
-            {"x": "lon", "y": "lat"} ).rename_vars(
-            {"x": "lon", "y": "lat"} )
-          
-          # Abrimos el archivo de población
-          with xr.open_dataset(path_g) as gender:
-            gender = gender.isel(band = 0).drop_vars(
+          # Abrimos el archivo de países
+          with xr.open_dataset(path_c) as countries:
+            countries = countries.isel(band = 0).drop_vars(
               ["band", "spatial_ref"] ).rename_dims(
               {"x": "lon", "y": "lat"} ).rename_vars(
               {"x": "lon", "y": "lat"} )
             
-            # Ajustamos índices
-            gender["lat"] = countries["lat"]
-            gender["lon"] = countries["lon"]
-            gender["band_data"] = gender["band_data"].T
-
-            # Coordenadas extremas
-            lat_min = min( gender["lat"].values[0],
-                          gender["lat"].values[-1] )
-            lat_max = max( gender["lat"].values[0],
-                          gender["lat"].values[-1] )
-            lon_min = min( gender["lon"].values[0],
-                          gender["lon"].values[-1] )
-            lon_max = max( gender["lon"].values[0],
-                          gender["lon"].values[-1] )
-            lim_lat = [ slice(lat_max, (lat_max+lat_min)/2),
-                        slice(lat_max, (lat_max+lat_min)/2),
-                        slice((lat_max+lat_min)/2, lat_min),
-                        slice((lat_max+lat_min)/2, lat_min) ]
-            lim_lon = [ slice(lon_min, (lon_max+lon_min)/2),
-                        slice((lon_max+lon_min)/2, lon_max),
-                        slice(lon_min, (lon_max+lon_min)/2),
-                        slice((lon_max+lon_min)/2, lon_max) ]
-
-            # Iteramos para cada categoría climática
-            for i, v in enumerate(vars):
-              print(f" {v}                                       ", end = "\r")
-
-              cols = [var_n, name_p[i], name_pp[i]]
-
-              # Abrimos archivo climático
-              path_clim = f"{file_path}{files[i]}"
-              with xr.open_dataset( f"{file_path}{files[i]}") as clim:
-                clim = clim.isel(band = 0).drop_vars(
-                  ["band", "spatial_ref"] ).rename_dims(
-                  {"x": "lon", "y": "lat"} ).rename_vars(
-                  {"x": "lon", "y": "lat"} )
-                
-                # Ajustamos índices
-                clim["lat"] = countries["lat"]
-                clim["lon"] = countries["lon"]
+            # Abrimos el archivo de población
+            with xr.open_dataset(path_g) as gender:
+              gender = gender.isel(band = 0).drop_vars(
+                ["band", "spatial_ref"] ).rename_dims(
+                {"x": "lon", "y": "lat"} ).rename_vars(
+                {"x": "lon", "y": "lat"} )
               
-                # Igualamos la extensión de los archivos y pasamos a DataFrame
-                countries_i = []
-                for j in range( len(lim_lat) ):
-                  gender_j = gender.sel(
-                    {"lat": lim_lat[j], "lon": lim_lon[j]} )
-                  clim_j = clim.sel(
-                    {"lat": lim_lat[j], "lon": lim_lon[j]} )
-                  countries_j = countries.sel(
-                    {"lat": lim_lat[j], "lon": lim_lon[j]} )    
-                  gender_j = gender_j.to_dataframe().reset_index(drop = True)
-                  clim_j   =   clim_j.to_dataframe().reset_index(drop = True)
-                  countries_i.append( countries_j.to_dataframe(
-                    ).reset_index(drop = True) )
+              # Ajustamos índices
+              gender["lat"] = countries["lat"]
+              gender["lon"] = countries["lon"]
+              gender["band_data"] = gender["band_data"].T
 
-                  # Calculamos la población afectada
-                  countries_i[j][var_n] = gender_j["band_data"]
-                  countries_i[j][v] =   clim_j["band_data"]
-                  countries_i[j] = countries_i[j].set_index("band_data")
-                  countries_i[j].index.name = "ISO_N3"
-                  countries_i[j][name_p[i]] = (
-                    countries_i[j][v] * countries_i[j][var_n] )
-                  countries_i[j] = countries_i[j].groupby("ISO_N3").sum()
-                  countries_i[j].index = countries_i[j].index.astype(int)
+              # Coordenadas extremas
+              lat_min = min( gender["lat"].values[0],
+                            gender["lat"].values[-1] )
+              lat_max = max( gender["lat"].values[0],
+                            gender["lat"].values[-1] )
+              lon_min = min( gender["lon"].values[0],
+                            gender["lon"].values[-1] )
+              lon_max = max( gender["lon"].values[0],
+                            gender["lon"].values[-1] )
+              lim_lat = [ slice(lat_max, (lat_max+lat_min)/2),
+                          slice(lat_max, (lat_max+lat_min)/2),
+                          slice((lat_max+lat_min)/2, lat_min),
+                          slice((lat_max+lat_min)/2, lat_min) ]
+              lim_lon = [ slice(lon_min, (lon_max+lon_min)/2),
+                          slice((lon_max+lon_min)/2, lon_max),
+                          slice(lon_min, (lon_max+lon_min)/2),
+                          slice((lon_max+lon_min)/2, lon_max) ]
+
+              # Iteramos para cada categoría climática
+              for i, v in enumerate(vars):
+                print(f" {v}                                     ")#, end = "\r")
+
+                cols = [var_n, name_p[i], name_pp[i]]
+
+                # Abrimos archivo climático
+                path_clim = f"{file_path}{files[i]}"
+                with xr.open_dataset( f"{file_path}{files[i]}") as clim:
+                  clim = clim.isel(band = 0).drop_vars(
+                    ["band", "spatial_ref"] ).rename_dims(
+                    {"x": "lon", "y": "lat"} ).rename_vars(
+                    {"x": "lon", "y": "lat"} )
+                  
+                  # Ajustamos índices
+                  clim["lat"] = countries["lat"]
+                  clim["lon"] = countries["lon"]
                 
-                # Calculamos el porcentaje de afectados
-                countries_i = pd.concat(countries_i).groupby("ISO_N3").sum()
-                countries_i[name_pp[i]] = ( 100 * countries_i[name_p[i]]
-                  / countries_i[var_n] )
+                  # Igualamos la extensión de los 
+                  # archivos y pasamos a DataFrame
+                  countries_i = []
+                  for j in range( len(lim_lat) ):
+                    gender_j = gender.sel(
+                      {"lat": lim_lat[j], "lon": lim_lon[j]} )
+                    clim_j = clim.sel(
+                      {"lat": lim_lat[j], "lon": lim_lon[j]} )
+                    countries_j = countries.sel(
+                      {"lat": lim_lat[j], "lon": lim_lon[j]} )    
+                    gender_j = gender_j.to_dataframe().reset_index(drop = True)
+                    clim_j   =   clim_j.to_dataframe().reset_index(drop = True)
+                    countries_i.append( countries_j.to_dataframe(
+                      ).reset_index(drop = True) )
 
-                df_iso[cols] = countries_i[cols]
+                    # Calculamos la población afectada
+                    countries_i[j][var_n] = gender_j["band_data"]
+                    countries_i[j][v] =   clim_j["band_data"]
+                    countries_i[j] = countries_i[j].set_index("band_data")
+                    countries_i[j].index.name = a_n[a]
+                    countries_i[j][name_p[i]] = (
+                      countries_i[j][v] * countries_i[j][var_n] )
+                    countries_i[j] = countries_i[j].groupby(a_n[a]).sum()
+                    countries_i[j].index = countries_i[j].index.astype(int)
+                  
+                  # Calculamos el porcentaje de afectados
+                  countries_i = pd.concat(countries_i).groupby(a_n[a]).sum()
+                  countries_i[name_pp[i]] = ( 100 * countries_i[name_p[i]]
+                    / countries_i[var_n] )
 
-        # Afectados climáticos totales
-        df_iso[name_t] = df_iso[name_p].sum(axis = 1)
-        df_iso[name_tp] = ( 100 * df_iso[name_t] / df_iso[var_n] )
-        for i, v in enumerate(name_c):
-          df_iso[v]  = df_iso[name_ci[i]].sum(axis = 1)
-          df_iso[name_cp[i]] = 100 * df_iso[v] / df_iso[var_n]
-        df_iso.to_csv( f"share/Indexes/{file_n}" )
+                  df_iso[cols] = countries_i[cols]
 
-        # Quitamos el archivo demográfico del disco
-        os.remove( path_g )
+          # Afectados climáticos totales
+          df_iso[name_t] = df_iso[name_p].sum(axis = 1)
+          df_iso[name_tp] = ( 100 * df_iso[name_t] / df_iso[var_n] )
+          for i, v in enumerate(name_c):
+            df_iso[v]  = df_iso[name_ci[i]].sum(axis = 1)
+            df_iso[name_cp[i]] = 100 * df_iso[v] / df_iso[var_n]
+          df_iso.to_csv( f"{d_f[d]}{file_n}" )
 
-        print("\nVariable processed.\n")
+          # Quitamos el archivo demográfico del disco
+          os.remove( path_g )
+
+          print("\nVariable processed.\n")
