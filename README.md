@@ -1,6 +1,8 @@
 # UNESCO_climate
 
+
 ## Archivos
+
 
 ### Principales
 
@@ -26,7 +28,7 @@ socioeconómica ante riesgos de transición
 - **heritage.ipynb**: Calcula los sitios patrimonio de la humanidad expuestos al cambio climático
     - Crea el archivo *"results/WHC/WHC.shp"*, para calcular manualmente en QGIS los sitios expuesto al aumento del nuvel del mar
     - Crea el archivo *"share/Indexes/WHC_sites.csv"*
-    - Requiere correr antes *"indice_clima.ipynb"*, *"indice_socio.ipynb"*, e *"indice_work.ipynb"*
+    - Requiere correr antes *"indice_clima.ipynb"*
     - Requiere la carpeta *"results/WHC_sea_level_rise/"* generada con un anaálisis manual en QGIS
 
 - **impact_pop.ipynb**: Calcula la exposición al cambio climático de sectores demográficos específicos.
@@ -43,11 +45,17 @@ socioeconómica ante riesgos de transición
 
 - **migration.ipynb**: Calcula la exposición al cambio climático de los migrantes
     - Requiere correr antes*"indice_clima.ipynb"*, e *"indice_socio.ipynb"*
+
+- **energy.ipynb**: Calcula la exposición al cambio climático de infraestructura energética.
+    - Crea los archivos *"share/Indexes/global_power_plant_database_climate.csv"*, *"share/Indexes/US_Refineries_Capacity_ProductType_climate.csv"*, y *"share/Indexes/International_Refineries_Capacity_climate.csv"*
+    - Requiere correr antes *"indice_clima.ipynb"*
+
 ### Secundarios y no utilizados
 - **sea_level.ipynb**: Crea una tabla y un NetCDF de cambios en el nivel del mar con los datos de la NASA
     - Crea el archivo "share/Climate/sea_level_change.csv" y "results/sea_level_change_ssp245_2050.nc"
 - **quantile.ipynb**: Obtiene las variables climáticas, socioeconómicas y de gobernanza y cálcula índices para cada categoría
 mapa.ipynb: Pruebas de mapas nacionales y subnacionales
+
 
 ### Archivos
 - Los archivos de la carpeta "../results/graphs/" se copiaron directo de los cuadernos de Jupyter, no los guarda el programa

@@ -7,9 +7,6 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-# Códigos nacionales
-ix  = "ISO_A3"
-
 # Carpetas
 file_path = "results/hotspots_1km/" 
 data_path = "Bases_de_datos/Worldpop/"
@@ -17,15 +14,19 @@ data_path = "Bases_de_datos/Worldpop/"
 d_f = ["results/"]
 d_n = ["diss_me"]
 s_f = ["2040_2059_SSP245"]
-#a_f = ["share/Indexes/", "results/"]
-#a_n = ["ISO_N3", "diss_me"]
+g_f = ["f"]
+g_n = ["Female"]
+a_f = [70, 75, 80]
+a_n = ( [f"{x} years" for x in [ "70-75", "75-80", "more than 80" ] ] )
+#d_f = ["share/Indexes/", "results/"]
+#d_n = ["ISO_N3", "diss_me"]
 #s_f = ["1995_2014", "2040_2059_SSP245"]
-g_f = ["f", "m"]
-g_n = ["Female", "Male"]
-a_f = [0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
-a_n = ( ["0-12 months"] + [f"{x} years" for x in [ "1-5",  "5-10", "10-15",
-  "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55",
-  "55-60", "60-65", "65-70", "70-75", "75-80", "more than 80" ] ] )
+#g_f = ["f", "m"]
+#g_n = ["Female", "Male"]
+#a_f = [0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
+#a_n = ( ["0-12 months"] + [f"{x} years" for x in [ "1-5",  "5-10", "10-15",
+#  "15-20", "20-25", "25-30", "30-35", "35-40", "40-45", "45-50", "50-55",
+#  "55-60", "60-65", "65-70", "70-75", "75-80", "more than 80" ] ] )
 
 # Variables de población afectada
 vars = [ "Only extreme rainfall", "Only extreme heat",
@@ -106,8 +107,8 @@ for d in range(len(d_f)):
           # Nombres de columnas y variables
           var_n   = f"{g_n[g]} population, {a_n[a]} old"
           name_n  = f" affected {var_n.lower()}"
-          if d: file_n  = f"{names}_{s_f[s]}_admin_1.csv"
-          else: file_n  = f"{names}_{s_f[s]}.csv"
+          if   d_n[d] == "ISO_N3" : file_n  = f"{names}_{s_f[s]}.csv"
+          elif d_n[d] == "diss_me": file_n  = f"{names}_{s_f[s]}_admin_1.csv"
           print(f"Processing {var_n}")
           name_p  = [ f"{v}{name_n}" for v in vars       ]
           name_pp = [ f"% {v}{name_n}" for v in vars     ]
@@ -120,34 +121,33 @@ for d in range(len(d_f)):
             name_ci.append( [ f"{v}{name_n}" for v in x ] )
 
           # Creamos la columna de datos si no existe
-          if d:
-            if not os.path.exists( f"{d_f[d]}{file_n}" ):
-              # Tabla base
-              df_iso = pd.DataFrame(index = np.arange(1, 20013))
-              df_iso.index.name = a_n[a]
-            else:
-              df_iso = pd.read_csv( f"{d_f[d]}{file_n}",
-                index_col = "ISO_N3" )
-            if not var_n in df_iso.columns:
-              df_iso[var_n] = np.nan
-              df_iso[name_p] = np.nan
-              df_iso[name_pp] = None
-          else:
+          if d_n[d] == "ISO_N3":
             if not os.path.exists( f"{d_f[d]}{file_n}" ):
               # Tabla base
               iso = "../Bases_de_datos/Country_ISO_code.csv"
               df_iso = pd.read_csv(iso).set_index("alpha-3")
-              df_iso.index.name = ix
-              df_iso = df_iso.rename(columns = {"country-code": "ISO_N3"})
+              df_iso.index.name = d_n[d]
+              df_iso = df_iso.rename(columns = {"country-code": d_n[d]})
               df_iso[var_n] = np.nan
               df_iso[name_p] = np.nan
               df_iso[name_pp] = None
-              df_iso[["name", "ISO_N3", "region", "sub-region", "OECD", "EU27",
+              df_iso[["name", d_n[d], "region", "sub-region", "OECD", "EU27",
                 "BRICS+", "BRICS", "LDC", "SIDS", "LLDC"] + name_p + name_pp
                 ].to_csv( f"{d_f[d]}{file_n}" )
             else:
+              df_iso = pd.read_csv( f"{d_f[d]}{file_n}", index_col = d_n[d] )
+            if not var_n in df_iso.columns:
+              df_iso[var_n] = np.nan
+              df_iso[name_p] = np.nan
+              df_iso[name_pp] = None
+          elif d_n[d] == "diss_me":
+            if not os.path.exists( f"{d_f[d]}{file_n}" ):
+              # Tabla base
+              df_iso = pd.DataFrame(index = np.arange(1, 20013))
+              df_iso.index.name = d_n[d]
+            else:
               df_iso = pd.read_csv( f"{d_f[d]}{file_n}",
-                index_col = "ISO_N3" )
+                index_col = d_n[d] )
             if not var_n in df_iso.columns:
               df_iso[var_n] = np.nan
               df_iso[name_p] = np.nan
@@ -186,14 +186,48 @@ for d in range(len(d_f)):
                             gender["lon"].values[-1] )
               lon_max = max( gender["lon"].values[0],
                             gender["lon"].values[-1] )
-              lim_lat = [ slice(lat_max, (lat_max+lat_min)/2),
-                          slice(lat_max, (lat_max+lat_min)/2),
-                          slice((lat_max+lat_min)/2, lat_min),
-                          slice((lat_max+lat_min)/2, lat_min) ]
-              lim_lon = [ slice(lon_min, (lon_max+lon_min)/2),
-                          slice((lon_max+lon_min)/2, lon_max),
-                          slice(lon_min, (lon_max+lon_min)/2),
-                          slice((lon_max+lon_min)/2, lon_max) ]
+              if d_n[d] == "ISO_N3":
+                lim_lat = [ slice(lat_max, (lat_max+lat_min)/2),
+                            slice(lat_max, (lat_max+lat_min)/2),
+                            slice((lat_max+lat_min)/2, lat_min),
+                            slice((lat_max+lat_min)/2, lat_min) ]
+                lim_lon = [ slice(lon_min, (lon_max+lon_min)/2),
+                            slice((lon_max+lon_min)/2, lon_max),
+                            slice(lon_min, (lon_max+lon_min)/2),
+                            slice((lon_max+lon_min)/2, lon_max) ]
+              elif d_n[d] == "diss_me":
+                lim_lat = [ slice(lat_max, (lat_max*3+lat_min)/4),
+                            slice(lat_max, (lat_max*3+lat_min)/4),
+                            slice(lat_max, (lat_max*3+lat_min)/4),
+                            slice(lat_max, (lat_max*3+lat_min)/4),
+                            slice((lat_max*3+lat_min)/4, (lat_max+lat_min)/2),
+                            slice((lat_max*3+lat_min)/4, (lat_max+lat_min)/2),
+                            slice((lat_max*3+lat_min)/4, (lat_max+lat_min)/2),
+                            slice((lat_max*3+lat_min)/4, (lat_max+lat_min)/2),
+                            slice((lat_max+lat_min)/2, (lat_max+lat_min*3)/4),
+                            slice((lat_max+lat_min)/2, (lat_max+lat_min*3)/4),
+                            slice((lat_max+lat_min)/2, (lat_max+lat_min*3)/4),
+                            slice((lat_max+lat_min)/2, (lat_max+lat_min*3)/4),
+                            slice((lat_max+lat_min*3)/4, lat_min),
+                            slice((lat_max+lat_min*3)/4, lat_min),
+                            slice((lat_max+lat_min*3)/4, lat_min),
+                            slice((lat_max+lat_min*3)/4, lat_min) ]
+                lim_lon = [ slice(lon_min, (lon_max+lon_min*3)/4),
+                            slice((lon_max+lon_min*3)/4, (lon_max+lon_min)/2),
+                            slice((lon_max+lon_min)/2, (lon_max*3+lon_min)/4),
+                            slice((lon_max*3+lon_min)/4, lon_max),
+                            slice(lon_min, (lon_max+lon_min*3)/4),
+                            slice((lon_max+lon_min*3)/4, (lon_max+lon_min)/2),
+                            slice((lon_max+lon_min)/2, (lon_max*3+lon_min)/4),
+                            slice((lon_max*3+lon_min)/4, lon_max),
+                            slice(lon_min, (lon_max+lon_min*3)/4),
+                            slice((lon_max+lon_min*3)/4, (lon_max+lon_min)/2),
+                            slice((lon_max+lon_min)/2, (lon_max*3+lon_min)/4),
+                            slice((lon_max*3+lon_min)/4, lon_max),
+                            slice(lon_min, (lon_max+lon_min*3)/4),
+                            slice((lon_max+lon_min*3)/4, (lon_max+lon_min)/2),
+                            slice((lon_max+lon_min)/2, (lon_max*3+lon_min)/4),
+                            slice((lon_max*3+lon_min)/4, lon_max) ]
 
               # Iteramos para cada categoría climática
               for i, v in enumerate(vars):
