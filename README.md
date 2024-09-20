@@ -16,10 +16,12 @@
 - **indice_riesgo.ipynb**: Calcula un índice por país de riesgo ante el cambio climático
     - Crea el archivo *"../share/Indexes/climate_risk_index.csv"*
     - Requiere correr antes *"indice_clima.ipynb"* e *"indice_socio.ipynb"*
+    - Crea imágenes en la carpeta *"graphs/"*
 
 - **indice_work.ipynb**: Calcula un índice por país de vulnerabilidad
 socioeconómica ante riesgos de transición
     - Crea el archivo *"../share/Indexes/Transition_vulnerability_index.csv"*
+    - Crea imágenes en la carpeta *"graphs/"*
 
 - **workers_vulnerability.ipynb**: Calcula la cantidad de trbajadores vulnerables al cambio climático
     - Crea el archivo *"share/Indexes/vulnerable_workers.csv"*
@@ -30,11 +32,12 @@ socioeconómica ante riesgos de transición
     - Crea el archivo *"share/Indexes/WHC_sites.csv"*
     - Requiere correr antes *"indice_clima.ipynb"*
     - Requiere la carpeta *"results/WHC_sea_level_rise/"* generada con un anaálisis manual en QGIS
+    - Crea imágenes en la carpeta *"graphs/"*
 
 - **impact_pop.ipynb**: Calcula la exposición al cambio climático de sectores demográficos específicos.
     - Crea el archivo *"share/Indexes/extreme_poor.csv"*
     - Requiere correr antes*"indice_clima.ipynb"*, *"indice_socio.ipynb"*, e *"indice_work.ipynb"*
-     - Crea imágenes en la carpeta *"graphs/"*
+    - Crea imágenes en la carpeta *"graphs/"*
 
 - **NDC.ipynb**: Mapas de Climate Action Tracker, evaluación de NDCs
     - Crea imágenes en la carpeta *"graphs/"*
