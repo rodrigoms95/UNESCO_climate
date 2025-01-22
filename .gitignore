@@ -1,6 +1,6 @@
 #Ignorar
 *.code-workspace
-#data/
+data/
 results/
 graphs/
 data/
